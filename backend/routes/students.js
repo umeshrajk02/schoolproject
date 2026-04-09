@@ -6,28 +6,22 @@ const db = require('../db');
 router.post('/', (req, res) => {
  const { name, math, science, english } = req.body;
 
- db.run(
-   `INSERT INTO students (name, math, science, english) VALUES (?, ?, ?, ?)`,
-   [name, math, science, english],
-   function (err) {
-     if (err) return res.status(500).send(err);
-     res.send({ id: this.lastID });
-   }
+ const stmt = db.prepare(
+   `INSERT INTO students (name, math, science, english) VALUES (?, ?, ?, ?)`
  );
+ const result = stmt.run(name, math, science, english);
+ res.send({ id: result.lastInsertRowid });
 });
 
 // Search student
 router.get('/', (req, res) => {
  const name = req.query.name;
 
- db.all(
-   `SELECT * FROM students WHERE name LIKE ?`,
-   [`%${name}%`],
-   (err, rows) => {
-     if (err) return res.status(500).send(err);
-     res.send(rows);
-   }
+ const stmt = db.prepare(
+   `SELECT * FROM students WHERE name LIKE ?`
  );
+ const rows = stmt.all(`%${name}%`);
+ res.send(rows);
 });
 
 module.exports = router;
