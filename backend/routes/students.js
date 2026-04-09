@@ -13,7 +13,7 @@ router.post('/', (req, res) => {
  res.send({ id: result.lastInsertRowid });
 });
 
-// Search student
+// Search student from DB
 router.get('/', (req, res) => {
  const name = req.query.name;
 
